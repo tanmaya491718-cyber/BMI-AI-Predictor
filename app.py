@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pickle
 import pandas as pd
+import textwrap
 
 # ---------------------------
 # Load saved ML objects
@@ -186,22 +187,21 @@ if st.button("Predict BMI Category"):
     # ---------------------------
     # RESULT CARD
     # ---------------------------
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="card">
-    <h2>Prediction Result</h2>
-    <h1>{category}</h1>
-    <p>BMI Level Code: {label}</p>
+        <h2>Prediction Result</h2>
+        <h1>{category}</h1>
+        <p>BMI Level Code: {label}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # ---------------------------
     # BMI VISUAL SCALE
     # ---------------------------
     bmi_position = (label / 5) * 100
 
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="bmi-wrapper">
-
         <div class="bmi-bar">
             <div class="bmi-pointer" style="left:{bmi_position}%"></div>
         </div>
@@ -214,16 +214,15 @@ if st.button("Predict BMI Category"):
             <div>Obesity</div>
             <div>Extreme Obesity</div>
         </div>
-
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # ---------------------------
     # AI DIET RECOMMENDATION CARD
     # ---------------------------
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div class="card">
-    <h2>AI Diet Recommendation</h2>
-    <p>{advice}</p>
+        <h2>AI Diet Recommendation</h2>
+        <p>{advice}</p>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
