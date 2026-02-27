@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import pickle
 import pandas as pd
-import plotly.graph_objects as go
 
 # ---------------------------
 # Load saved ML objects
@@ -86,6 +85,48 @@ box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 margin-top:20px;
 }
 
+/* BMI VISUAL SCALE */
+
+.bmi-wrapper {
+width:100%;
+margin-top:30px;
+}
+
+.bmi-bar {
+position:relative;
+height:26px;
+border-radius:20px;
+background: linear-gradient(
+to right,
+#00bfff 0%,
+#87cefa 16%,
+#00c853 33%,
+#ff9800 50%,
+#ff5252 70%,
+#b71c1c 100%
+);
+box-shadow:0 4px 15px rgba(0,0,0,0.3);
+}
+
+.bmi-pointer {
+position:absolute;
+top:-14px;
+width:0;
+height:0;
+border-left:12px solid transparent;
+border-right:12px solid transparent;
+border-bottom:18px solid white;
+transition:left 0.8s ease-in-out;
+}
+
+.bmi-labels {
+display:flex;
+justify-content:space-between;
+font-size:12px;
+margin-top:6px;
+opacity:0.9;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -140,25 +181,26 @@ if st.button("Predict BMI Category"):
     """, unsafe_allow_html=True)
 
     # ---------------------------
-    # BMI GAUGE METER
+    # BMI HORIZONTAL VISUAL SCALE
     # ---------------------------
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=label,
-        title={'text': "BMI Level"},
-        gauge={
-            'axis': {'range': [0, 5]},
-            'bar': {'color': "cyan"},
-            'steps': [
-                {'range': [0, 1], 'color': "blue"},
-                {'range': [1, 2], 'color': "lightblue"},
-                {'range': [2, 3], 'color': "green"},
-                {'range': [3, 4], 'color': "orange"},
-                {'range': [4, 5], 'color': "red"},
-            ],
-        }
-    ))
-    st.plotly_chart(fig)
+    bmi_position = (label / 5) * 100
+
+    st.markdown(f"""
+    <div class="bmi-wrapper">
+        <div class="bmi-bar">
+            <div class="bmi-pointer" style="left:{bmi_position}%"></div>
+        </div>
+
+        <div class="bmi-labels">
+            <span>Extremely Weak</span>
+            <span>Weak</span>
+            <span>Normal</span>
+            <span>Overweight</span>
+            <span>Obesity</span>
+            <span>Extreme Obesity</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ---------------------------
     # AI DIET RECOMMENDATION CARD
