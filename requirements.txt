@@ -1,5 +1,5 @@
-flask
+streamlit
 numpy
-scikit-learn
 pandas
-gunicorn
+scikit-learn
+pickle-mixin
