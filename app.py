@@ -141,30 +141,41 @@ if st.button("Predict BMI Category"):
     """, unsafe_allow_html=True)
 
     # ---------------------------
-    # BMI HORIZONTAL VISUAL SCALE (NO RAW HTML ISSUE)
+    # BMI HORIZONTAL VISUAL SCALE
     # ---------------------------
     bmi_position = (label / 5) * 100
 
     components.html(f"""
     <div class="bmi-wrapper">
+
       <div class="bmi-bar">
-        <div class="bmi-pointer" style="left:{bmi_position}%"></div>
+          <div class="bmi-pointer" style="left:{bmi_position}%"></div>
       </div>
 
       <div class="bmi-labels">
-        <div>Extremely Weak</div>
-        <div>Weak</div>
-        <div>Normal</div>
-        <div>Overweight</div>
-        <div>Obesity</div>
-        <div>Extreme Obesity</div>
+          <div>Extremely Weak</div>
+          <div>Weak</div>
+          <div>Normal</div>
+          <div>Overweight</div>
+          <div>Obesity</div>
+          <div>Extreme Obesity</div>
       </div>
+
+      <div class="bmi-numbers">
+          <div>0</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+      </div>
+
     </div>
 
     <style>
     .bmi-wrapper {{
       width: 100%;
-      margin-top: 22px;
+      margin-top: 25px;
       padding: 0 6px;
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -173,7 +184,7 @@ if st.button("Predict BMI Category"):
     .bmi-bar {{
       position: relative;
       width: 100%;
-      height: 26px;
+      height: 28px;
       border-radius: 20px;
       overflow: hidden;
       background: linear-gradient(to right,
@@ -187,15 +198,16 @@ if st.button("Predict BMI Category"):
       box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }}
 
+    /* upside-down triangle */
     .bmi-pointer {{
       position: absolute;
-      top: -18px;
+      top: -20px;
       transform: translateX(-50%);
       width: 0;
       height: 0;
       border-left: 12px solid transparent;
       border-right: 12px solid transparent;
-      border-top: 18px solid #ffffff; /* Downward arrow */
+      border-top: 18px solid #ffffff;
       transition: left 0.8s ease-in-out;
       filter: drop-shadow(0 0 6px rgba(255,255,255,0.9));
     }}
@@ -203,21 +215,34 @@ if st.button("Predict BMI Category"):
     .bmi-labels {{
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 4px;
       text-align: center;
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 12px;
       color: rgba(255,255,255,0.9);
       line-height: 1.2;
+    }}
+
+    .bmi-numbers {{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      text-align: center;
+      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
     }}
 
     @media (max-width: 480px) {{
       .bmi-labels {{
         font-size: 10px;
       }}
+      .bmi-numbers {{
+        font-size: 11px;
+      }}
     }}
     </style>
-    """, height=120)
+    """, height=170)
 
     # ---------------------------
     # AI DIET RECOMMENDATION CARD
