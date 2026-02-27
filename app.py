@@ -90,40 +90,54 @@ margin-top:20px;
 .bmi-wrapper {
 width:100%;
 margin-top:30px;
+padding:0 6px;
+box-sizing:border-box;
 }
 
 .bmi-bar {
 position:relative;
+width:100%;
 height:26px;
 border-radius:20px;
+overflow:hidden;
+
 background: linear-gradient(
 to right,
 #00bfff 0%,
-#87cefa 16%,
-#00c853 33%,
+#87cefa 16.6%,
+#00c853 33.3%,
 #ff9800 50%,
-#ff5252 70%,
+#ff5252 66.6%,
 #b71c1c 100%
 );
+
 box-shadow:0 4px 15px rgba(0,0,0,0.3);
 }
 
+/* FIXED POINTER (DOWNWARD) */
 .bmi-pointer {
 position:absolute;
-top:-14px;
+top:-18px;
+transform:translateX(-50%);
 width:0;
 height:0;
+
 border-left:12px solid transparent;
 border-right:12px solid transparent;
-border-bottom:18px solid white;
+border-top:18px solid white;
+
 transition:left 0.8s ease-in-out;
+filter: drop-shadow(0 0 6px white);
 }
 
+/* CLEAN LABEL ALIGNMENT */
 .bmi-labels {
-display:flex;
-justify-content:space-between;
+display:grid;
+grid-template-columns: repeat(6, 1fr);
+text-align:center;
 font-size:12px;
-margin-top:6px;
+margin-top:8px;
+width:100%;
 opacity:0.9;
 }
 
@@ -170,7 +184,7 @@ if st.button("Predict BMI Category"):
     advice = diet_advice.get(category)
 
     # ---------------------------
-    # 3D RESULT CARD
+    # RESULT CARD
     # ---------------------------
     st.markdown(f"""
     <div class="card">
@@ -181,24 +195,26 @@ if st.button("Predict BMI Category"):
     """, unsafe_allow_html=True)
 
     # ---------------------------
-    # BMI HORIZONTAL VISUAL SCALE
+    # BMI VISUAL SCALE
     # ---------------------------
     bmi_position = (label / 5) * 100
 
     st.markdown(f"""
     <div class="bmi-wrapper">
+
         <div class="bmi-bar">
             <div class="bmi-pointer" style="left:{bmi_position}%"></div>
         </div>
 
         <div class="bmi-labels">
-            <span>Extremely Weak</span>
-            <span>Weak</span>
-            <span>Normal</span>
-            <span>Overweight</span>
-            <span>Obesity</span>
-            <span>Extreme Obesity</span>
+            <div>Extremely Weak</div>
+            <div>Weak</div>
+            <div>Normal</div>
+            <div>Overweight</div>
+            <div>Obesity</div>
+            <div>Extreme Obesity</div>
         </div>
+
     </div>
     """, unsafe_allow_html=True)
 
