@@ -11,6 +11,18 @@ scaler = pickle.load(open("scaler.pkl", "rb"))
 columns = pickle.load(open("columns.pkl", "rb"))
 
 # ---------------------------
+# BMI Label Mapping
+# ---------------------------
+bmi_labels = {
+    0: "Extremely Weak",
+    1: "Weak",
+    2: "Normal",
+    3: "Overweight",
+    4: "Obesity",
+    5: "Extreme Obesity"
+}
+
+# ---------------------------
 # Page settings
 # ---------------------------
 st.set_page_config(page_title="BMI Predictor", layout="centered")
@@ -45,5 +57,9 @@ if st.button("Predict BMI Category"):
     # Model prediction
     prediction = model.predict(input_scaled)[0]
 
+    # Convert label to category name
+    label = int(prediction)
+    category = bmi_labels.get(label, "Unknown")
+
     # Show result
-    st.success(f"Predicted BMI Category: {prediction}")
+    st.success(f"Predicted BMI Category: {label}  {category}")
