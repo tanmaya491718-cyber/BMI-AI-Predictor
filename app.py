@@ -90,14 +90,14 @@ h1 {
 # ---------------------------
 # TITLE
 # ---------------------------
-st.markdown("<h1>💪 AI BMI Health Predictor</h1>", unsafe_allow_html=True)
+st.markdown("<h1>💪 BMI Health Predictor</h1>", unsafe_allow_html=True)
 st.markdown("<center>Smart Machine Learning Body Analysis</center>", unsafe_allow_html=True)
 
 # ---------------------------
 # SIDEBAR
 # ---------------------------
 st.sidebar.title("About App")
-st.sidebar.write("AI powered BMI health analysis")
+st.sidebar.write("ML powered BMI health analysis")
 st.sidebar.write("Enter height & weight to check health condition")
 
 # ---------------------------
@@ -249,7 +249,7 @@ if st.button("Predict BMI Category"):
     # ---------------------------
     st.markdown(f"""
     <div class="card">
-        <h2>AI Diet Recommendation</h2>
+        <h2>Diet Recommendation</h2>
         <p>{advice}</p>
     </div>
     """, unsafe_allow_html=True)
