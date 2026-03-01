@@ -10,4 +10,5 @@ Machine Learning based BMI prediction web app built using Streamlit.
 
 ## 🚀 Live Demo
 
-[🌐 Click Here to Open Website]((https://bmi-ai-predictor.onrender.com))
+[🌐 Click Here to Open Website]
+(https://bmi-ai-predictor.onrender.com)
