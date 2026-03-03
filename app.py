@@ -178,7 +178,7 @@ if st.button("Predict BMI Category"):
         {"✅ Model & Formula are aligned" if aligned else "⚠ Model & Formula differ (dataset labels may differ)"}
       </div>
     </div>
-    """, height=260)
+    """, height=360)
 
     # ---------------------------
     # BMI HORIZONTAL VISUAL SCALE
