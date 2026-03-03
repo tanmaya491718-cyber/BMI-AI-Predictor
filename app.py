@@ -12,7 +12,7 @@ scaler = pickle.load(open("scaler.pkl", "rb"))
 columns = pickle.load(open("columns.pkl", "rb"))
 
 # ---------------------------
-# BMI Label Mapping
+# BMI Label Mapping (0-5)
 # ---------------------------
 bmi_labels = {
     0: "Extremely Weak",
@@ -40,8 +40,78 @@ diet_advice = {
 # ---------------------------
 st.set_page_config(page_title="BMI Predictor", layout="centered")
 
-st.title("💪 BMI Health Predictor")
-st.write("AI + Formula Based BMI Analysis")
+# ---------------------------
+# APPLE STYLE UI + GLASS UI
+# ---------------------------
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    color: white;
+}
+
+.main {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 20px;
+}
+
+h1 {
+    text-align:center;
+    font-weight:700;
+}
+
+.stButton>button {
+    background: linear-gradient(45deg,#00c6ff,#0072ff);
+    color:white;
+    height:50px;
+    border-radius:12px;
+    font-size:18px;
+    border:none;
+    transition:0.3s;
+}
+
+.stButton>button:hover {
+    transform: scale(1.05);
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    margin-top:20px;
+}
+.small {
+    opacity:0.9;
+    font-size:14px;
+    margin-top:6px;
+}
+.match {
+    margin-top:10px;
+    padding:10px;
+    border-radius:12px;
+    font-weight:700;
+}
+.good { background: rgba(0,255,140,0.15); border: 1px solid rgba(0,255,140,0.35); }
+.bad  { background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.35); }
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------
+# TITLE
+# ---------------------------
+st.markdown("<h1>💪 BMI Health Predictor</h1>", unsafe_allow_html=True)
+st.markdown("<center>Smart Machine Learning Body Analysis</center>", unsafe_allow_html=True)
+
+# ---------------------------
+# SIDEBAR
+# ---------------------------
+st.sidebar.title("About App")
+st.sidebar.write("ML powered BMI health analysis")
+st.sidebar.write("Enter height & weight to check health condition")
 
 # ---------------------------
 # User Inputs
@@ -56,21 +126,20 @@ weight = st.number_input("Weight (kg)", min_value=10.0, max_value=300.0)
 if st.button("Predict BMI Category"):
 
     # ---------------------------
-    # 1️⃣ BMI FORMULA CALCULATION
+    # 1) BMI FORMULA (DISPLAY + FORMULA CATEGORY)
     # ---------------------------
-    bmi = weight * 10000 / (height ** 2)
-    bmi = round(bmi, 2)
+    bmi_value = round((weight * 10000) / (height ** 2), 2)
 
-    # Formula category mapping
-    if bmi < 16:
+    # Map BMI value -> label 0..5 (tuned for your 6 labels)
+    if bmi_value < 16:
         formula_label = 0
-    elif bmi < 18.5:
+    elif bmi_value < 18.5:
         formula_label = 1
-    elif bmi < 25:
+    elif bmi_value < 25:
         formula_label = 2
-    elif bmi < 30:
+    elif bmi_value < 30:
         formula_label = 3
-    elif bmi < 35:
+    elif bmi_value < 35:
         formula_label = 4
     else:
         formula_label = 5
@@ -78,7 +147,7 @@ if st.button("Predict BMI Category"):
     formula_category = bmi_labels[formula_label]
 
     # ---------------------------
-    # 2️⃣ MODEL PREDICTION
+    # 2) MODEL PREDICTION (UNCHANGED)
     # ---------------------------
     gender_male = 1 if gender == "Male" else 0
     input_data = pd.DataFrame([[height, weight, gender_male]], columns=columns)
@@ -88,93 +157,141 @@ if st.button("Predict BMI Category"):
     model_label = int(prediction)
     model_category = bmi_labels.get(model_label, "Unknown")
 
-    advice = diet_advice.get(formula_category)
+    # Advice based on formula category (more logical)
+    advice = diet_advice.get(formula_category, "No advice available.")
 
     # ---------------------------
-    # RESULT CARD
+    # RESULT CARD (Design preserved)
     # ---------------------------
-    st.success(f"Calculated BMI: {bmi}")
-    st.info(f"Formula Category: {formula_category}")
-    st.warning(f"Model Prediction: {model_category}")
+    aligned = (formula_label == model_label)
 
-    if formula_label == model_label:
-        st.success("✅ Formula and Model are aligned")
-    else:
-        st.error("⚠ Model and Formula differ")
+    st.markdown(f"""
+    <div class="card">
+        <h2>Prediction Result</h2>
+        <h1>{formula_category}</h1>
+
+        <div class="small">Calculated BMI (Formula): <b>{bmi_value}</b></div>
+        <div class="small">Formula Level Code: <b>{formula_label}</b></div>
+        <div class="small">Model Predicted Code: <b>{model_label}</b> → <b>{model_category}</b></div>
+
+        <div class="match {'good' if aligned else 'bad'}">
+            {"✅ Model & Formula are aligned" if aligned else "⚠ Model & Formula differ (dataset labels may differ)"}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ---------------------------
-    # VISUAL SCALE (Formula Based)
+    # BMI HORIZONTAL VISUAL SCALE (Formula-based pointer)
     # ---------------------------
+    # center of each of 6 segments
     segment_width = 100 / 6
     bmi_position = (formula_label * segment_width) + (segment_width / 2)
 
     components.html(f"""
-    <div style="width:100%;margin-top:30px;font-family:sans-serif">
+    <div class="bmi-wrapper">
 
-      <div style="
-        position:relative;
-        width:100%;
-        height:30px;
-        border-radius:30px;
-        background: linear-gradient(to right,
-          #00bfff 0%,
-          #87cefa 16.6%,
-          #00c853 33.3%,
-          #ff9800 50%,
-          #ff5252 66.6%,
-          #b71c1c 100%);
-        box-shadow:0 6px 20px rgba(0,0,0,0.3);
-      ">
-
-        <div style="
-          position:absolute;
-          top:-22px;
-          left:{bmi_position}%;
-          transform:translateX(-50%);
-          width:0;height:0;
-          border-left:14px solid transparent;
-          border-right:14px solid transparent;
-          border-top:20px solid white;
-          transition:left 0.9s;
-        "></div>
-
+      <div class="bmi-bar">
+          <div class="bmi-pointer" style="left:{bmi_position}%"></div>
       </div>
 
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(6,1fr);
-        text-align:center;
-        margin-top:10px;
-        font-size:12px;
-      ">
-        <div>Extremely Weak</div>
-        <div>Weak</div>
-        <div>Normal</div>
-        <div>Overweight</div>
-        <div>Obesity</div>
-        <div>Extreme Obesity</div>
+      <div class="bmi-labels">
+          <div>Extremely Weak</div>
+          <div>Weak</div>
+          <div>Normal</div>
+          <div>Overweight</div>
+          <div>Obesity</div>
+          <div>Extreme Obesity</div>
       </div>
 
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(6,1fr);
-        text-align:center;
-        margin-top:4px;
-        font-weight:700;
-      ">
-        <div>0</div>
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
+      <div class="bmi-numbers">
+          <div>0</div>
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
       </div>
 
     </div>
-    """, height=190)
+
+    <style>
+    .bmi-wrapper {{
+      width: 100%;
+      margin-top: 30px;
+      padding: 0 6px;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }}
+
+    .bmi-bar {{
+      position: relative;
+      width: 100%;
+      height: 30px;
+      border-radius: 30px;
+      overflow: hidden;
+      background: linear-gradient(to right,
+        #00bfff 0%,
+        #87cefa 16.6%,
+        #00c853 33.3%,
+        #ff9800 50%,
+        #ff5252 66.6%,
+        #b71c1c 100%
+      );
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }}
+
+    /* upside-down triangle */
+    .bmi-pointer {{
+      position: absolute;
+      top: -22px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 20px solid #ffffff;
+      transition: left 0.9s cubic-bezier(.25,.8,.25,1);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.9));
+    }}
+
+    .bmi-labels {{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      text-align: center;
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.95);
+      line-height: 1.2;
+    }}
+
+    .bmi-numbers {{
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      text-align: center;
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }}
+
+    @media (max-width: 480px) {{
+      .bmi-labels {{
+        font-size: 10px;
+      }}
+      .bmi-numbers {{
+        font-size: 12px;
+      }}
+    }}
+    </style>
+    """, height=200)
 
     # ---------------------------
-    # DIET RECOMMENDATION
+    # Diet Recommendation (Design preserved)
     # ---------------------------
-    st.subheader("Diet Recommendation")
-    st.write(advice)
+    st.markdown(f"""
+    <div class="card">
+        <h2>Diet Recommendation</h2>
+        <p>{advice}</p>
+    </div>
+    """, unsafe_allow_html=True)
