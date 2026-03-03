@@ -273,7 +273,7 @@ if st.button("Predict BMI Category"):
       .bmi-numbers {{ font-size: 12px; }}
     }}
     </style>
-    """, height=200)
+    """, height=300)
 
     # ---------------------------
     # Diet Recommendation
