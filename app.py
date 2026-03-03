@@ -50,13 +50,6 @@ st.markdown("""
     color: white;
 }
 
-.main {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    padding: 30px;
-    border-radius: 20px;
-}
-
 h1 {
     text-align:center;
     font-weight:700;
@@ -74,38 +67,6 @@ h1 {
 
 .stButton>button:hover {
     transform: scale(1.05);
-}
-
-.card {
-    background: rgba(255,255,255,0.1);
-    padding:25px;
-    border-radius:20px;
-    text-align:center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    margin-top:20px;
-}
-
-.small {
-    opacity:0.9;
-    font-size:14px;
-    margin-top:6px;
-}
-
-.match {
-    margin-top:12px;
-    padding:10px;
-    border-radius:12px;
-    font-weight:700;
-}
-
-.good { 
-    background: rgba(0,255,140,0.15); 
-    border: 1px solid rgba(0,255,140,0.35); 
-}
-
-.bad  { 
-    background: rgba(255,80,80,0.15); 
-    border: 1px solid rgba(255,80,80,0.35); 
 }
 </style>
 """, unsafe_allow_html=True)
@@ -136,11 +97,10 @@ weight = st.number_input("Weight (kg)", min_value=10.0, max_value=300.0)
 if st.button("Predict BMI Category"):
 
     # ---------------------------
-    # 1) BMI FORMULA (DISPLAY + FORMULA CATEGORY)
+    # 1) BMI FORMULA
     # ---------------------------
     bmi_value = round((weight * 10000) / (height ** 2), 2)
 
-    # Map BMI value -> label 0..5
     if bmi_value < 16:
         formula_label = 0
     elif bmi_value < 18.5:
@@ -157,40 +117,71 @@ if st.button("Predict BMI Category"):
     formula_category = bmi_labels[formula_label]
 
     # ---------------------------
-    # 2) MODEL PREDICTION (UNCHANGED)
+    # 2) MODEL PREDICTION
     # ---------------------------
     gender_male = 1 if gender == "Male" else 0
     input_data = pd.DataFrame([[height, weight, gender_male]], columns=columns)
     input_scaled = scaler.transform(input_data)
-    prediction = model.predict(input_scaled)[0]
-
-    model_label = int(prediction)
+    model_label = int(model.predict(input_scaled)[0])
     model_category = bmi_labels.get(model_label, "Unknown")
 
+    aligned = (formula_label == model_label)
     advice = diet_advice.get(formula_category, "No advice available.")
 
-    aligned = (formula_label == model_label)
+    # ---------------------------
+    # RESULT CARD (GUARANTEED FIX)
+    # ---------------------------
+    components.html(f"""
+    <style>
+      .card {{
+        background: rgba(255,255,255,0.1);
+        padding: 26px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        margin-top: 18px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        color: white;
+      }}
+      .small {{
+        opacity:0.9;
+        font-size:14px;
+        margin-top:6px;
+      }}
+      .match {{
+        margin-top:12px;
+        padding:10px;
+        border-radius:12px;
+        font-weight:700;
+      }}
+      .good {{
+        background: rgba(0,255,140,0.15);
+        border: 1px solid rgba(0,255,140,0.35);
+      }}
+      .bad {{
+        background: rgba(255,80,80,0.15);
+        border: 1px solid rgba(255,80,80,0.35);
+      }}
+      h2 {{ margin: 0 0 8px 0; }}
+      h1 {{ margin: 8px 0 6px 0; font-size: 44px; }}
+    </style>
 
-    # ---------------------------
-    # RESULT CARD (FIXED: HTML RENDER)
-    # ---------------------------
-    st.markdown(f"""
     <div class="card">
-        <h2>Prediction Result</h2>
-        <h1>{formula_category}</h1>
+      <h2>Prediction Result</h2>
+      <h1>{formula_category}</h1>
 
-        <div class="small">Calculated BMI (Formula): <b>{bmi_value}</b></div>
-        <div class="small">Formula Level Code: <b>{formula_label}</b></div>
-        <div class="small">Model Predicted Code: <b>{model_label}</b> → <b>{model_category}</b></div>
+      <div class="small">Calculated BMI (Formula): <b>{bmi_value}</b></div>
+      <div class="small">Formula Level Code: <b>{formula_label}</b></div>
+      <div class="small">Model Predicted Code: <b>{model_label}</b> → <b>{model_category}</b></div>
 
-        <div class="match {'good' if aligned else 'bad'}">
-            {"✅ Model & Formula are aligned" if aligned else "⚠ Model & Formula differ (dataset labels may differ)"}
-        </div>
+      <div class="match {"good" if aligned else "bad"}">
+        {"✅ Model & Formula are aligned" if aligned else "⚠ Model & Formula differ (dataset labels may differ)"}
+      </div>
     </div>
-    """, unsafe_allow_html=True)
+    """, height=260)
 
     # ---------------------------
-    # BMI HORIZONTAL VISUAL SCALE (Formula-based pointer)
+    # BMI HORIZONTAL VISUAL SCALE
     # ---------------------------
     segment_width = 100 / 6
     bmi_position = (formula_label * segment_width) + (segment_width / 2)
@@ -212,12 +203,7 @@ if st.button("Predict BMI Category"):
       </div>
 
       <div class="bmi-numbers">
-          <div>0</div>
-          <div>1</div>
-          <div>2</div>
-          <div>3</div>
-          <div>4</div>
-          <div>5</div>
+          <div>0</div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
       </div>
 
     </div>
@@ -225,10 +211,11 @@ if st.button("Predict BMI Category"):
     <style>
     .bmi-wrapper {{
       width: 100%;
-      margin-top: 30px;
+      margin-top: 18px;
       padding: 0 6px;
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color:white;
     }}
 
     .bmi-bar {{
@@ -248,7 +235,6 @@ if st.button("Predict BMI Category"):
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
 
-    /* upside-down triangle */
     .bmi-pointer {{
       position: absolute;
       top: -22px;
@@ -268,7 +254,7 @@ if st.button("Predict BMI Category"):
       text-align: center;
       margin-top: 12px;
       font-size: 12px;
-      color: rgba(255,255,255,0.95);
+      opacity: 0.95;
       line-height: 1.2;
     }}
 
@@ -279,26 +265,30 @@ if st.button("Predict BMI Category"):
       margin-top: 5px;
       font-size: 14px;
       font-weight: 700;
-      color: #ffffff;
       letter-spacing: 0.5px;
     }}
 
     @media (max-width: 480px) {{
-      .bmi-labels {{
-        font-size: 10px;
-      }}
-      .bmi-numbers {{
-        font-size: 12px;
-      }}
+      .bmi-labels {{ font-size: 10px; }}
+      .bmi-numbers {{ font-size: 12px; }}
     }}
     </style>
     """, height=200)
 
     # ---------------------------
-    # Diet Recommendation (Design preserved)
+    # Diet Recommendation
     # ---------------------------
     st.markdown(f"""
-    <div class="card">
+    <div style="
+      background: rgba(255,255,255,0.1);
+      padding:25px;
+      border-radius:20px;
+      text-align:center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      margin-top:20px;
+      color:white;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial;
+    ">
         <h2>Diet Recommendation</h2>
         <p>{advice}</p>
     </div>
