@@ -84,19 +84,29 @@ h1 {
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     margin-top:20px;
 }
+
 .small {
     opacity:0.9;
     font-size:14px;
     margin-top:6px;
 }
+
 .match {
-    margin-top:10px;
+    margin-top:12px;
     padding:10px;
     border-radius:12px;
     font-weight:700;
 }
-.good { background: rgba(0,255,140,0.15); border: 1px solid rgba(0,255,140,0.35); }
-.bad  { background: rgba(255,80,80,0.15); border: 1px solid rgba(255,80,80,0.35); }
+
+.good { 
+    background: rgba(0,255,140,0.15); 
+    border: 1px solid rgba(0,255,140,0.35); 
+}
+
+.bad  { 
+    background: rgba(255,80,80,0.15); 
+    border: 1px solid rgba(255,80,80,0.35); 
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -130,7 +140,7 @@ if st.button("Predict BMI Category"):
     # ---------------------------
     bmi_value = round((weight * 10000) / (height ** 2), 2)
 
-    # Map BMI value -> label 0..5 (tuned for your 6 labels)
+    # Map BMI value -> label 0..5
     if bmi_value < 16:
         formula_label = 0
     elif bmi_value < 18.5:
@@ -157,14 +167,13 @@ if st.button("Predict BMI Category"):
     model_label = int(prediction)
     model_category = bmi_labels.get(model_label, "Unknown")
 
-    # Advice based on formula category (more logical)
     advice = diet_advice.get(formula_category, "No advice available.")
 
-    # ---------------------------
-    # RESULT CARD (Design preserved)
-    # ---------------------------
     aligned = (formula_label == model_label)
 
+    # ---------------------------
+    # RESULT CARD (FIXED: HTML RENDER)
+    # ---------------------------
     st.markdown(f"""
     <div class="card">
         <h2>Prediction Result</h2>
@@ -183,7 +192,6 @@ if st.button("Predict BMI Category"):
     # ---------------------------
     # BMI HORIZONTAL VISUAL SCALE (Formula-based pointer)
     # ---------------------------
-    # center of each of 6 segments
     segment_width = 100 / 6
     bmi_position = (formula_label * segment_width) + (segment_width / 2)
 
