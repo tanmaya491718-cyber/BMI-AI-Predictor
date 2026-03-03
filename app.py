@@ -141,9 +141,10 @@ if st.button("Predict BMI Category"):
     """, unsafe_allow_html=True)
 
     # ---------------------------
-    # BMI HORIZONTAL VISUAL SCALE
+    # BMI HORIZONTAL VISUAL SCALE (Improved)
     # ---------------------------
-    bmi_position = (label / 5) * 100
+    segment_width = 100 / 6
+    bmi_position = (label * segment_width) + (segment_width / 2)
 
     components.html(f"""
     <div class="bmi-wrapper">
@@ -175,17 +176,15 @@ if st.button("Predict BMI Category"):
     <style>
     .bmi-wrapper {{
       width: 100%;
-      margin-top: 25px;
-      padding: 0 6px;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      margin-top: 30px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
     }}
 
     .bmi-bar {{
       position: relative;
       width: 100%;
-      height: 28px;
-      border-radius: 20px;
+      height: 30px;
+      border-radius: 30px;
       overflow: hidden;
       background: linear-gradient(to right,
         #00bfff 0%,
@@ -195,30 +194,29 @@ if st.button("Predict BMI Category"):
         #ff5252 66.6%,
         #b71c1c 100%
       );
-      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }}
 
-    /* upside-down triangle */
     .bmi-pointer {{
       position: absolute;
-      top: -20px;
+      top: -22px;
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-top: 18px solid #ffffff;
-      transition: left 0.8s ease-in-out;
-      filter: drop-shadow(0 0 6px rgba(255,255,255,0.9));
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 20px solid #ffffff;
+      transition: left 0.9s cubic-bezier(.25,.8,.25,1);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.9));
     }}
 
     .bmi-labels {{
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       text-align: center;
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 12px;
-      color: rgba(255,255,255,0.9);
+      color: rgba(255,255,255,0.95);
       line-height: 1.2;
     }}
 
@@ -226,8 +224,8 @@ if st.button("Predict BMI Category"):
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       text-align: center;
-      margin-top: 4px;
-      font-size: 13px;
+      margin-top: 5px;
+      font-size: 14px;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: 0.5px;
@@ -238,11 +236,11 @@ if st.button("Predict BMI Category"):
         font-size: 10px;
       }}
       .bmi-numbers {{
-        font-size: 11px;
+        font-size: 12px;
       }}
     }}
     </style>
-    """, height=170)
+    """, height=190)
 
     # ---------------------------
     # AI DIET RECOMMENDATION CARD
