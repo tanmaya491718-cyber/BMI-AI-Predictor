@@ -5,7 +5,7 @@ Machine Learning based BMI prediction web app built using Streamlit.
 ## Features
 - Predict BMI category using trained ML model
 - Modern UI
-- Confidence score
+- Diet Recommendations
 - Health indicator
 
 ## 🚀 Live Demo
